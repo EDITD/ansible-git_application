@@ -4,6 +4,7 @@ ansible-git_application
 A role for deploying applications from github
 
 Actions
+-------
 
 - Installs git
 - Ensures an `application user` exists
