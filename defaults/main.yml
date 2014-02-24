@@ -1,0 +1,9 @@
+---
+
+git_application_deploy_to: /opt/myapplication
+git_application_repo: git@github.com:mycompany/myapplication.git
+git_application_version: master
+git_application_user: myuser
+git_application_group: myusergroup
+
+git_application_pull_from_git: yes

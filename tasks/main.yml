@@ -1,0 +1,32 @@
+---
+
+- name: create group
+  group: name={{ git_application_group }}
+  sudo: yes
+
+- name: create user
+  user: name={{ git_application_user }} group={{ git_application_group }}
+  sudo: yes
+
+- name: create application directory (owned by ansible ssh user)
+  file: path={{ git_application_deploy_to }} state=directory owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  sudo: yes
+
+- name: install git
+  sudo: yes
+  apt: pkg=git update_cache=yes
+
+- name: check if known_hosts exists
+  stat: path=~{{ ansible_ssh_user }}/.ssh/known_hosts
+  register: known_hosts_file
+
+- name: ensure github.com in known host
+  shell: ssh-keyscan -H github.com >> ~{{ ansible_ssh_user }}/.ssh/known_hosts
+  when: known_hosts_file.stat.exists == false
+
+- name: clone repo to application directory
+  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version=master
+
+- name: make application directory be owned by application user
+  file: path={{ git_application_deploy_to }} state=directory recurse=yes owner={{ git_application_user }}
+  sudo: yes
