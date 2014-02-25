@@ -26,6 +26,7 @@
 
 - name: clone repo to application directory
   git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version=master
+  when: git_application_pull_from_git == True
 
 - name: make application directory be owned by application user
   file: path={{ git_application_deploy_to }} state=directory recurse=yes owner={{ git_application_user }}
