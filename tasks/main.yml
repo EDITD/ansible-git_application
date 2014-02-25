@@ -19,10 +19,11 @@
 - name: check if known_hosts exists
   stat: path=~{{ ansible_ssh_user }}/.ssh/known_hosts
   register: known_hosts_file
+  when: git_application_pull_from_git == True
 
 - name: ensure github.com in known host
   shell: ssh-keyscan -H github.com >> ~{{ ansible_ssh_user }}/.ssh/known_hosts
-  when: known_hosts_file.stat.exists == false
+  when: git_application_pull_from_git == True and known_hosts_file.stat.exists == false
 
 - name: clone repo to application directory
   git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version=master
