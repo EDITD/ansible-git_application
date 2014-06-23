@@ -9,7 +9,7 @@
   sudo: yes
 
 - name: create application directory (owned by ansible ssh user)
-  file: path={{ git_application_deploy_to }} state=directory owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  file: path={{ git_application_deploy_to }} state=directory owner={{ git_application_user }} group={{ git_application_user }}
   sudo: yes
 
 - name: install git
@@ -17,16 +17,22 @@
   apt: pkg=git update_cache=yes
 
 - name: check if known_hosts exists
-  stat: path=~{{ ansible_ssh_user }}/.ssh/known_hosts
+  stat: path=~{{ git_application_user }}/.ssh/known_hosts
   register: known_hosts_file
+  sudo: yes
+  sudo_user: "{{ git_application_user }}"
   when: git_application_pull_from_git == True
 
 - name: ensure github.com in known host
-  shell: ssh-keyscan -H github.com >> ~{{ ansible_ssh_user }}/.ssh/known_hosts
+  shell: ssh-keyscan -H github.com >> ~{{ git_application_user }}/.ssh/known_hosts
+  sudo: yes
+  sudo_user: "{{ git_application_user }}"
   when: git_application_pull_from_git == True and known_hosts_file.stat.exists == false
 
 - name: clone repo to application directory
-  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version=master
+  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }}
+  sudo: yes
+  sudo_user: "{{ git_application_user }}"
   when: git_application_pull_from_git == True
 
 - name: make application directory be owned by application user
