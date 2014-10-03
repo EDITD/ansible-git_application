@@ -16,21 +16,8 @@
   sudo: yes
   apt: pkg=git update_cache=yes
 
-- name: check if known_hosts exists
-  stat: path=~{{ git_application_user }}/.ssh/known_hosts
-  register: known_hosts_file
-  sudo: yes
-  sudo_user: "{{ git_application_user }}"
-  when: git_application_pull_from_git == True
-
-- name: ensure github.com in known host
-  shell: ssh-keyscan -H github.com >> ~{{ git_application_user }}/.ssh/known_hosts
-  sudo: yes
-  sudo_user: "{{ git_application_user }}"
-  when: git_application_pull_from_git == True and known_hosts_file.stat.exists == false
-
 - name: clone repo to application directory
-  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }}
+  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }} accept_hostkey=yes
   sudo: yes
   sudo_user: "{{ git_application_user }}"
   when: git_application_pull_from_git == True
