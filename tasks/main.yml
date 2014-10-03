@@ -16,11 +16,28 @@
   sudo: yes
   apt: pkg=git update_cache=yes
 
+# We need to run the git clone command as the ssh user (otherwise agent
+# forwarding won't work)
+# But the ssh user doesn't have access. We could add both users to the
+# same group, but changing groups would require a relogin to pick up the
+# change. And we can't do that within a playbook.
+# So as a horrific compromise, we simply give global write permission for
+# the duration of the git clone command.
+- name: temporarily give everyone write access to the git dir
+  command: chmod -R a+w {{ git_application_deploy_to }}
+  sudo: yes
+
+# We need to run the git clone as the ansible ssh user. Otherwise we won't
+# get the agent forwarding.
 - name: clone repo to application directory
   git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }} accept_hostkey=yes
   sudo: yes
-  sudo_user: "{{ git_application_user }}"
+  sudo_user: "{{ ansible_ssh_user }}"
   when: git_application_pull_from_git == True
+
+- name: remove global write access
+  command: chmod -R a+w {{ git_application_deploy_to }}
+  sudo: yes
 
 - name: make application directory be owned by application user
   file: path={{ git_application_deploy_to }} state=directory recurse=yes owner={{ git_application_user }}
