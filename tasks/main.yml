@@ -36,7 +36,7 @@
   when: git_application_pull_from_git == True
 
 - name: remove global write access
-  command: chmod -R a+w {{ git_application_deploy_to }}
+  command: chmod -R a-w {{ git_application_deploy_to }}
   sudo: yes
 
 - name: make application directory be owned by application user
