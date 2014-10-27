@@ -21,10 +21,10 @@
 # But the ssh user doesn't have access. We could add both users to the
 # same group, but changing groups would require a relogin to pick up the
 # change. And we can't do that within a playbook.
-# So as a horrific compromise, we simply give global write permission for
-# the duration of the git clone command.
-- name: temporarily give everyone write access to the git dir
-  command: chmod -R o+w {{ git_application_deploy_to }}
+# So as a horrific compromise, we simply give write permission to 'group'
+# and 'other' for the duration of the git clone command.
+- name: temporarily give 'group' and 'other' write access to the git dir
+  command: chmod -R go+w {{ git_application_deploy_to }}
   sudo: yes
 
 # We need to run the git clone as the ansible ssh user. Otherwise we won't
@@ -35,8 +35,8 @@
   sudo_user: "{{ ansible_ssh_user }}"
   when: git_application_pull_from_git == True
 
-- name: remove global write access
-  command: chmod -R o-w {{ git_application_deploy_to }}
+- name: remove write access from 'group' and 'other'
+  command: chmod -R go-w {{ git_application_deploy_to }}
   sudo: yes
 
 - name: make application directory be owned by application user
