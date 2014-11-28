@@ -26,6 +26,7 @@
 - name: temporarily give 'group' and 'other' write access to the git dir
   command: chmod -R go+w {{ git_application_deploy_to }}
   sudo: yes
+  when: git_application_pull_from_git == True
 
 # We need to run the git clone as the ansible ssh user. Otherwise we won't
 # get the agent forwarding.
@@ -38,7 +39,9 @@
 - name: remove write access from 'group' and 'other'
   command: chmod -R go-w {{ git_application_deploy_to }}
   sudo: yes
+  when: git_application_pull_from_git == True
 
 - name: make application directory be owned by application user
   file: path={{ git_application_deploy_to }} state=directory recurse=yes owner={{ git_application_user }}
   sudo: yes
+  when: git_application_pull_from_git == True
