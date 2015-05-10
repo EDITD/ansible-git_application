@@ -9,7 +9,7 @@
   sudo: yes
 
 - name: create application directory (owned by ansible ssh user)
-  file: path={{ git_application_deploy_to }} state=directory owner={{ git_application_user }} group={{ git_application_user }}
+  file: path={{ git_application_deploy_to }} state=directory owner={{ git_application_user }} group={{ git_application_group }}
   sudo: yes
 
 - name: install git
