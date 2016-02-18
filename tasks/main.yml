@@ -14,7 +14,7 @@
 
 - name: install git
   sudo: yes
-  apt: pkg=git update_cache=yes
+  apt: pkg=git update_cache=yes cache_valid_time=3600
 
 # We need to run the git clone command as the ssh user (otherwise agent
 # forwarding won't work)
