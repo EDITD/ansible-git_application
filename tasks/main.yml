@@ -32,8 +32,7 @@
 # get the agent forwarding.
 - name: clone repo to application directory
   git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }} accept_hostkey=yes
-  sudo: yes
-  sudo_user: "{{ ansible_ssh_user }}"
+  sudo: no
   when: git_application_pull_from_git == True
 
 - name: remove write access from 'group' and 'other'
