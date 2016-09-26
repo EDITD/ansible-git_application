@@ -2,18 +2,18 @@
 
 - name: create group
   group: name={{ git_application_group }}
-  sudo: yes
+  become: yes
 
 - name: create user
   user: name={{ git_application_user }} group={{ git_application_group }}
-  sudo: yes
+  become: yes
 
 - name: create application directory (owned by git_application_user)
   file: path={{ git_application_deploy_to }} state=directory owner={{ git_application_user }} group={{ git_application_group }}
-  sudo: yes
+  become: yes
 
 - name: install git
-  sudo: yes
+  become: yes
   apt: pkg=git update_cache=yes cache_valid_time=3600
 
 # We need to run the git clone command as the ssh user (otherwise agent
@@ -25,7 +25,7 @@
 # and 'other' for the duration of the git clone command.
 - name: temporarily give 'group' and 'other' write access to the git dir
   command: chmod -R go+w {{ git_application_deploy_to }}
-  sudo: yes
+  become: yes
   when: git_application_pull_from_git == True
 
 # We need to run the git clone as the ansible ssh user. Otherwise we won't
@@ -37,15 +37,15 @@
     version={{ git_application_version }}
     accept_hostkey=yes
     force={{ git_application_force }}
-  sudo: no
+  become: no
   when: git_application_pull_from_git == True
 
 - name: remove write access from 'group' and 'other'
   command: chmod -R go-w {{ git_application_deploy_to }}
-  sudo: yes
+  become: yes
   when: git_application_pull_from_git == True
 
 - name: make application directory be owned by application user
   file: path={{ git_application_deploy_to }} state=directory recurse=yes owner={{ git_application_user }}
-  sudo: yes
+  become: yes
   when: git_application_pull_from_git == True
