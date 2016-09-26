@@ -7,3 +7,4 @@ git_application_user: myuser
 git_application_group: myusergroup
 
 git_application_pull_from_git: yes
+git_application_force: yes

@@ -31,7 +31,12 @@
 # We need to run the git clone as the ansible ssh user. Otherwise we won't
 # get the agent forwarding.
 - name: clone repo to application directory
-  git: dest={{ git_application_deploy_to }} repo={{ git_application_repo }} version={{ git_application_version }} accept_hostkey=yes
+  git: >
+    dest={{ git_application_deploy_to }}
+    repo={{ git_application_repo }}
+    version={{ git_application_version }}
+    accept_hostkey=yes
+    force={{ git_application_force }}
   sudo: no
   when: git_application_pull_from_git == True
 
